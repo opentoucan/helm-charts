@@ -1,0 +1,19 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'local>opentoucan/renovate-config',
+    'customManagers:helmChartYamlAppVersions',
+  ],
+
+  'helm-values': {
+    pinDigests: true,
+  },
+
+  bumpVersions: [
+    {
+      filePatterns: ["{{packageFileDir}}/Chart.{yaml,yml}"],
+      matchStrings: ["version:\\s(?<version>[^\\s]+)"],
+      bumpType: "{{#if isMajor}}major{{else}}patch{{/if}}",
+    },
+  ],
+}
