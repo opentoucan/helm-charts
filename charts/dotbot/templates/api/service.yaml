@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dotbot.api.fullname" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ include "dotbot.api.fullname" . | quote }}
+    app.kubernetes.io/instance: {{ .Release.Namespace | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote  }}
+    app.kubernetes.io/part-of: {{ .Chart.Name | quote }}
+spec:
+  type: {{ .Values.api.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.api.service.httpPort }}
+      targetPort: {{ $.Values.api.containerPorts.http }}
+      name: {{ .Values.api.service.httpPortName }}
+      protocol: TCP
+  selector:
+    app: {{ include "dotbot.api.fullname" . }}

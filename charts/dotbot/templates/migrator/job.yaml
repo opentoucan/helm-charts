@@ -1,0 +1,43 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "dotbot.migrator.fullname" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ include "dotbot.migrator.fullname" . | quote }}
+    app.kubernetes.io/instance: {{ .Release.Namespace | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote  }}
+    app.kubernetes.io/part-of: {{ .Chart.Name | quote }}
+spec:
+  ttlSecondsAfterFinished: {{ .Values.migrator.ttlSecondsAfterFinished }}
+  backoffLimit: {{ .Values.migrator.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "dotbot.migrator.fullname" . }}
+    spec:
+      restartPolicy: Never
+      {{- if .Values.migrator.serviceAccount.create }}
+      #serviceAccountName: {{ include "dotbot.migrator.fullname" $ }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.migrator.podSecurityContext | nindent 8 }}
+      containers:
+        - name: migrator
+          securityContext:
+            {{- toYaml .Values.migrator.securityContext | nindent 12 }}
+          image: {{ .Values.migrator.image.repository }}:{{ .Values.migrator.image.tag | default $.Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.migrator.image.imagePullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ (tpl .Values.migrator.existingSecret .) | default (include "dotbot.migrator.fullname" $) }}
+          env:
+          {{- with (concat .Values.global.env .Values.migrator.env) }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            {{- toYaml .Values.migrator.volumeMounts | nindent 12 }}
+      volumes:
+        {{- toYaml .Values.migrator.volumes | nindent 8 }}

@@ -1,0 +1,23 @@
+{{- if .Values.postgres.install }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dotbot.postgres.fullname" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ include "dotbot.postgres.fullname" . | quote }}
+    app.kubernetes.io/instance: {{ .Release.Namespace | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote  }}
+    app.kubernetes.io/part-of: {{ .Chart.Name | quote }}
+spec:
+  type: {{ .Values.postgres.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.postgres.service.postgresPort }}
+      targetPort: {{ $.Values.postgres.containerPorts.postgres }}
+      name: {{ .Values.postgres.service.postgresPortName }}
+      protocol: TCP
+  selector:
+    app: {{ include "dotbot.postgres.fullname" . }}
+{{- end }}

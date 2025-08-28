@@ -1,0 +1,27 @@
+{{- if .Values.rabbitmq.install -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dotbot.rabbitmq.fullname" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ include "dotbot.rabbitmq.fullname" . | quote}}
+    app.kubernetes.io/instance: {{ .Release.Namespace | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote  }}
+    app.kubernetes.io/part-of: {{ .Chart.Name | quote }}
+spec:
+  type: {{ .Values.rabbitmq.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.rabbitmq.service.amqpPort }}
+      targetPort: {{ .Values.rabbitmq.containerPorts.amqp }}
+      name: {{ .Values.rabbitmq.service.amqpPortName }}
+      protocol: TCP
+    - port: {{ .Values.rabbitmq.service.managementPort }}
+      targetPort: {{ .Values.rabbitmq.containerPorts.management }}
+      name: {{ .Values.rabbitmq.service.managementPortName }}
+      protocol: TCP
+  selector:
+    app: {{ include "dotbot.rabbitmq.fullname" . }}
+{{- end -}}

@@ -1,0 +1,27 @@
+{{- if .Values.s3.install -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dotbot.s3.fullname" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ include "dotbot.s3.fullname" . | quote }}
+    app.kubernetes.io/instance: {{ .Release.Namespace | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote  }}
+    app.kubernetes.io/part-of: {{ .Chart.Name | quote }}
+spec:
+  type: {{ .Values.s3.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.s3.service.s3Port }}
+      targetPort: {{ .Values.s3.containerPorts.s3 }}
+      name: {{ .Values.s3.service.s3PortName }}
+      protocol: TCP
+    - port: {{ .Values.s3.service.managementPort }}
+      targetPort: {{ .Values.s3.containerPorts.management }}
+      name: {{ .Values.s3.service.managementPortName }}
+      protocol: TCP
+  selector:
+    app: {{ include "dotbot.s3.fullname" . }}
+{{- end -}}

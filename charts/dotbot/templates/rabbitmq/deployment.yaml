@@ -1,0 +1,63 @@
+{{- if .Values.rabbitmq.install -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dotbot.rabbitmq.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ include "dotbot.rabbitmq.fullname" . | quote}}
+    app.kubernetes.io/instance: {{ .Release.Namespace | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote  }}
+    app.kubernetes.io/part-of: {{ .Chart.Name | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "dotbot.rabbitmq.fullname" . }}
+  template:
+    metadata:
+      {{- with .Values.rabbitmq.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ include "dotbot.rabbitmq.fullname" . }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.rabbitmq.podSecurityContext | nindent 8 }}
+      containers:
+        - name: rabbitmq
+          securityContext:
+            {{- toYaml .Values.rabbitmq.securityContext | nindent 12 }}
+          image: {{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag | default $.Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.rabbitmq.image.imagePullPolicy }}
+          env:
+            {{- $env := $.Values.global.env | default dict -}}
+            {{ range $k, $v := $env }}
+                - name: {{ $k | quote }}
+                  value: {{ $v | quote }}
+            {{- end }}
+                - name: RABBITMQ_DEFAULT_USER
+                  value: {{ .Values.rabbitmq.username }}
+                - name: RABBITMQ_DEFAULT_PASS
+                  value: {{ .Values.rabbitmq.password }}
+          ports:
+            - name: amqp
+              containerPort: {{ .Values.rabbitmq.containerPorts.amqp }}
+              protocol: TCP
+            - name: management
+              containerPort: {{ .Values.rabbitmq.containerPorts.management }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.rabbitmq.resources | nindent 12 }}
+          {{- with .Values.rabbitmq.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.rabbitmq.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end -}}

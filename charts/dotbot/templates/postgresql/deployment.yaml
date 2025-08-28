@@ -1,0 +1,62 @@
+{{- if .Values.postgres.install -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dotbot.postgres.fullname" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ include "dotbot.postgres.fullname" . | quote }}
+    app.kubernetes.io/instance: {{ .Release.Namespace | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote  }}
+    app.kubernetes.io/part-of: {{ .Chart.Name | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "dotbot.postgres.fullname" . }}
+  template:
+    metadata:
+      {{- with .Values.postgres.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ include "dotbot.postgres.fullname" . }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.postgres.podSecurityContext | nindent 8 }}
+      containers:
+        - name: postgres
+          securityContext:
+            {{- toYaml .Values.postgres.securityContext | nindent 12 }}
+          image: {{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag | default $.Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.postgres.image.imagePullPolicy }}
+          env:
+            {{- $env := $.Values.global.env | default dict -}}
+            {{ range $k, $v := $env }}
+              - name: {{ $k | quote }}
+                value: {{ $v | quote }}
+            {{- end }}
+              - name: POSTGRES_USER
+                value: {{ .Values.postgres.username }}
+              - name: POSTGRES_PASSWORD
+                value: {{ .Values.postgres.password }}
+              - name: POSTGRES_DB
+                value: {{ .Values.postgres.database }}
+          ports:
+            - name: postgres
+              containerPort: {{ .Values.postgres.containerPorts.postgres }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.postgres.resources | nindent 12 }}
+          {{- with .Values.postgres.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.postgres.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end -}}
