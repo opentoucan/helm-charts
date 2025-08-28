@@ -153,7 +153,7 @@ postgres:
   ## Postgres image
   image:
     repository: docker.io/library/postgres
-    tag: 13.22-trixie
+    tag: 13.22-trixie@sha256:aedabd10a05c7304233d006a186a42d7d350b11e702d227dc09a99882dafa142
     imagePullPolicy: ""
   podAnnotations: {}
   podLabels: {}
@@ -183,7 +183,7 @@ rabbitmq:
   password: test
   image:
     repository: docker.io/library/rabbitmq
-    tag: 4.2.0-beta.1-management
+    tag: 4.2.0-beta.1-management@sha256:171826afa206bc3909afd17f02b7ffd97646d88e78789eca9fb0c44c438e7c1f
     imagePullPolicy: ""
   podAnnotations: {}
   podLabels: {}
@@ -224,7 +224,7 @@ s3:
   secretAccessKey: 'dev'
   image:
     repository: quay.io/minio/minio
-    tag: RELEASE.2025-07-23T15-54-02Z
+    tag: RELEASE.2025-07-23T15-54-02Z@sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0
     imagePullPolicy: ""
   podAnnotations: {}
   podLabels: {}
