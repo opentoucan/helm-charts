@@ -13,7 +13,7 @@
     {
       filePatterns: ["{{packageFileDir}}/Chart.{yaml,yml}"],
       matchStrings: ["version:\\s(?<version>[^\\s]+)"],
-      bumpType: "{{#if isMajor}}major{{else}}patch{{/if}}",
+      bumpType: "{{#if isPatch}}patch{{else}}minor{{/if}}",
     },
   ],
 }
