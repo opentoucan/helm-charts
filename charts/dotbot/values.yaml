@@ -89,7 +89,7 @@ migrator:
   backoffLimit: 10
   image:
     repository: ghcr.io/opentoucan/dotbot.migrator
-    tag: 3.2.2@sha256:7c47369c557f2580b4b9fd95454b7e60e700ae130216e8bb1301924def610feb
+    tag: 3.3.0@sha256:ba8d979a6bebc5dc730066fd67e838735d8678b1627aa3c2ea66784065ff7626
     imagePullPolicy: IfNotPresent
   podAnnotations: {}
   podLabels: {}
