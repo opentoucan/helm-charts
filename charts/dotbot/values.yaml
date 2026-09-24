@@ -9,7 +9,7 @@ api:
   replicaCount: 1
   image:
     repository: ghcr.io/opentoucan/dotbot.api
-    tag: 3.3.0@sha256:046fea992fe566cd581e12f55c7b982b2aa6cb5631d92aaa8a368ea407fc97ac
+    tag: 3.4.6@sha256:53e295a8ee2ce2d1880ff7bc24c26fe8f7a2d81726eca5cb9572733b8505a1fb
     imagePullPolicy: IfNotPresent
   podAnnotations: {}
   podLabels: {}
