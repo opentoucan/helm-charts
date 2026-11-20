@@ -153,7 +153,7 @@ postgres:
   ## Postgres image
   image:
     repository: docker.io/library/postgres
-    tag: 18.0-trixie@sha256:1d288494853e244e7a78d87b3526e650e5221c622f9768ecac9313d0874a9c39
+    tag: 19.0-trixie@sha256:bb6e70add742cd868fb62cb3b2f67d1dd2bdd2b65a521e778420748753687c60
     imagePullPolicy: ""
   podAnnotations: {}
   podLabels: {}
